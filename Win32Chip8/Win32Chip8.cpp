@@ -24,12 +24,14 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 Chip8 chip8;
 PWSTR romPath;
+BOOL paused = false;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int, HWND*);
 PWSTR LoadFile();
-BOOL Run(HWND hWnd);
+BOOL Run();
+BOOL Pause();
 BOOL Stop(HWND hWnd);
 
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -177,7 +179,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_RUN:
-			Run(hWnd);
+			Run();
+			break;
+		case IDM_PAUSE:
+			Pause();
 			break;
 		case IDM_STOP:
 			Stop(hWnd);
@@ -241,7 +246,7 @@ PWSTR LoadFile() {
 	return pszFilePath;
 }
 
-BOOL Run(HWND hWnd) {
+BOOL Run() {
 	if (romPath == NULL) {
 		romPath = LoadFile();
 	}
@@ -250,6 +255,22 @@ BOOL Run(HWND hWnd) {
 	cpuTimerId = timeSetEvent(1000 / HERTZ, 0, (LPTIMECALLBACK)&cpuCycle, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
 	decrementTimerId = timeSetEvent(1000 / TIMER_HERTZ, 0, (LPTIMECALLBACK)&decrementTimers, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
 	updateScreenId = timeSetEvent(1000 / TIMER_HERTZ, 0, (LPTIMECALLBACK)&updateScreen, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+	paused = false;
+	return true;
+}
+
+BOOL Pause() {
+	if (!paused) {
+		timeKillEvent(cpuTimerId);
+		timeKillEvent(decrementTimerId);
+		timeKillEvent(updateScreenId);
+	}
+	else {
+		cpuTimerId = timeSetEvent(1000 / HERTZ, 0, (LPTIMECALLBACK)&cpuCycle, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+		decrementTimerId = timeSetEvent(1000 / TIMER_HERTZ, 0, (LPTIMECALLBACK)&decrementTimers, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+		updateScreenId = timeSetEvent(1000 / TIMER_HERTZ, 0, (LPTIMECALLBACK)&updateScreen, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+	}
+	paused = !paused;
 	return true;
 }
 

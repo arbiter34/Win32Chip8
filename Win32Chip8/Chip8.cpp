@@ -79,6 +79,41 @@ void __cdecl odprintf(const char *format, ...)
 	OutputDebugStringA(buf);
 }
 
+const void(*Chip8::cpuTable[16])() = {
+	_0000,
+	_1NNN,
+	_2NNN,
+	_3XNN,
+	_4XNN,
+	_5XY0,
+	_6XNN,
+	_7XNN,
+	_8000,
+	_9XY0,
+	_ANNN,
+	_BNNN,
+	_CXNN,
+	_DXYN,
+	_E000,
+	_F000
+};
+
+const void Chip8::_0000() {
+	cpuTable0000[(opcode & 0x000F)]();
+}
+
+const void Chip8::_8000() {
+	cpuTable8000[(opcode & 0x000F)]();
+}
+
+const void Chip8::_E000() {
+	cpuTableE000[(opcode & 0x000F)]();
+}
+
+const void Chip8::_F000() {
+	cpuTableF000[(opcode & 0x00FF)]();
+}
+
 void Chip8::emulateCycle() {
 	// Fetch Opcode
 	opcode = memory[pc] << 8 | memory[pc + 1];
