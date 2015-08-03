@@ -39,33 +39,33 @@ private:
 	unsigned char key[16];
 	unsigned char keyPressed;
 
-	const void(*cpuTable[16])();
-	const void(*cpuTable0000[2])();
-	const void(*cpuTable8000[9])();
-	const void(*cpuTableE000[2])();
-	const void(*cpuTableF000[9])();
+	static const void(*cpuTable[16])();
+	static const void(*cpuTable0000[2])();
+	static const void(*cpuTable8000[9])();
+	static const void(*cpuTableE000[2])();
+	static const void(*cpuTableF000[9])();
 
-	const void _0000();
-	const void _8000();
-	const void _E000();
-	const void _F000();
+	static const void _0000();
+	static const void _8000();
+	static const void _E000();
+	static const void _F000();
 
-	const void _0000();
-	const void _1NNN();
-	const void _2NNN();
-	const void _3XNN();
-	const void _4XNN();
-	const void _5XY0();
-	const void _6XNN();
-	const void _7XNN();
-	const void _8000();
-	const void _9XY0();
-	const void _ANNN();
-	const void _BNNN();
-	const void _CXNN();
-	const void _DXYN();
-	const void _E000();
-	const void _F000();
+	static const void _0000();
+	static const void _1NNN();
+	static const void _2NNN();
+	static const void _3XNN();
+	static const void _4XNN();
+	static const void _5XY0();
+	static const void _6XNN();
+	static const void _7XNN();
+	static const void _8000();
+	static const void _9XY0();
+	static const void _ANNN();
+	static const void _BNNN();
+	static const void _CXNN();
+	static const void _DXYN();
+	static const void _E000();
+	static const void _F000();
 
 	HWND hWnd;
 
