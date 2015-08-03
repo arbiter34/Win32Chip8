@@ -11,6 +11,8 @@
 #define IDM_ABOUT				104
 #define IDM_OPEN				110
 #define IDM_RUN					111
+#define IDM_PAUSE				113
+#define IDM_RESTART				114
 #define IDM_STOP				112
 #define IDM_EXIT				105
 #define IDI_WIN32CHIP8			107

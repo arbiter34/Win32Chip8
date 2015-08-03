@@ -24,13 +24,19 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 Chip8 chip8;
 PWSTR romPath;
+BOOL running = false;
+BOOL paused = false;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int, HWND*);
 PWSTR LoadFile();
-BOOL Run(HWND hWnd);
+BOOL Run();
+BOOL Restart(HWND hWnd);
+BOOL Pause();
 BOOL Stop(HWND hWnd);
+void StartTimers();
+void StopTimers();
 
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
@@ -177,7 +183,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_RUN:
-			Run(hWnd);
+			Run();
+			break;
+		case IDM_PAUSE:
+			Pause();
+			break;
+		case IDM_RESTART:
+			Restart(hWnd);
 			break;
 		case IDM_STOP:
 			Stop(hWnd);
@@ -241,27 +253,62 @@ PWSTR LoadFile() {
 	return pszFilePath;
 }
 
-BOOL Run(HWND hWnd) {
+BOOL Run() {
+	if (running) {
+		return false;
+	}
+	running = true;
 	if (romPath == NULL) {
 		romPath = LoadFile();
 	}
 	chip8.initialize();
 	chip8.loadGame(romPath);
-	cpuTimerId = timeSetEvent(1000 / HERTZ, 0, (LPTIMECALLBACK)&cpuCycle, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
-	decrementTimerId = timeSetEvent(1000 / TIMER_HERTZ, 0, (LPTIMECALLBACK)&decrementTimers, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
-	updateScreenId = timeSetEvent(1000 / TIMER_HERTZ, 0, (LPTIMECALLBACK)&updateScreen, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+	StartTimers();
 	return true;
+}
+
+BOOL Pause() {
+	if (!running) {
+		return false;
+	}
+	if (paused) {
+		StartTimers();
+	}
+	else {
+		StopTimers();
+	}
+	paused = !paused;
+	return true;
+}
+
+BOOL Restart(HWND hWnd) {
+	if (running) {
+		Stop(hWnd);
+		Run();
+		return true;
+	}
+	return false;
 }
 
 BOOL Stop(HWND hWnd) {
-	timeKillEvent(cpuTimerId);
-	timeKillEvent(decrementTimerId);
-	timeKillEvent(updateScreenId);
+	StopTimers();
 	chip8.initialize();
 	InvalidateRect(hWnd, NULL, FALSE);
+	running = false;
 	return true;
 }
 
+void StartTimers() {
+	cpuTimerId = timeSetEvent(1000 / HERTZ, 0, (LPTIMECALLBACK)&cpuCycle, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+	decrementTimerId = timeSetEvent(1000 / TIMER_HERTZ, 0, (LPTIMECALLBACK)&decrementTimers, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+	updateScreenId = timeSetEvent(1000 / TIMER_HERTZ, 0, (LPTIMECALLBACK)&updateScreen, NULL, TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+}
+
+void StopTimers() {
+	timeKillEvent(cpuTimerId);
+	timeKillEvent(decrementTimerId);
+	timeKillEvent(updateScreenId);
+}
 
 
 // Message handler for about box.
