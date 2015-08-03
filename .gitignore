@@ -42,6 +42,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.pdb
-Debug/Win32Chip8.exe
+Debug/
+ipch/
 *.tlog
 *.opensdf
