@@ -44,3 +44,4 @@ Temporary Items
 *.pdb
 Debug/Win32Chip8.exe
 *.tlog
+*.opensdf
