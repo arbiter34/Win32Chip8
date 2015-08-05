@@ -42,7 +42,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.pdb
-Debug/
-ipch/
+./Debug/*
+./ipch/*
 *.tlog
 *.opensdf
