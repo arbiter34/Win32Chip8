@@ -46,3 +46,10 @@ Temporary Items
 ./ipch/*
 *.tlog
 *.opensdf
+*.log
+Win32Chip8/Debug/stdafx.obj
+*.obj
+*.pch
+Win32Chip8/Release/Chip8.obj
+*.log
+Win32Chip8/Debug/stdafx.obj
